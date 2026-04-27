@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimeHub - Xem Phim Hoạt Hình Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-login {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn-login:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-register {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-logout {
+            background: #f5576c;
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            width: 400px;
+            max-width: 90%;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+            background: none;
+            border: none;
+        }
+
+        .modal h2 {
+            margin-bottom: 25px;
+            color: #333;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .social-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .btn-google {
+            background: #fff;
+            border: 2px solid #ea4335;
+            color: #ea4335;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-facebook {
+            background: #1877f2;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #999;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .divider::before {
+            left: 0;
+        }
+
+        .divider::after {
+            right: 0;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 50px;
+        }
+
+        .categories {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 10px 25px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .add-category-btn {
+            background: rgba(255,255,255,0.1);
+            border: 2px dashed rgba(255,255,255,0.5);
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .movie-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .movie-thumbnail {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+        }
+
+        .movie-info {
+            padding: 20px;
+        }
+
+        .movie-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .movie-category {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .admin-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .admin-panel h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .admin-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+
+        .admin-form input,
+        .admin-form select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        .notification.success {
+            background: #4caf50;
+        }
+
+        .notification.error {
+            background: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">🎬 AnimeHub</div>
+        <div class="nav-buttons" id="navButtons">
+            <!-- Dynamic content -->
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Admin Panel (chỉ hiển thị cho admin) -->
+        <div class="admin-panel" id="adminPanel" style="display: none;">
+            <h3>🛠️ Admin Panel - Thêm Phim Mới</h3>
+            <div class="admin-form">
+                <input type="text" id="movieTitle" placeholder="Tên phim">
+                <select id="movieCategory">
+                    <option value="">Chọn danh mục</option>
+                </select>
+                <input type="text" id="movieThumbnail" placeholder="Emoji thumbnail (vd: 🦊)">
+                <input type="text" id="newCategory" placeholder="Tạo danh mục mới">
+                <button class="btn btn-register" onclick="addCategory()">+ Thêm mục</button>
+                <button class="btn btn-register" onclick="addMovie()">Thêm Phim</button>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="categories" id="categoriesContainer">
+            <!-- Dynamic categories -->
+        </div>
+
+        <!-- Movies Grid -->
+        <div class="movies-grid" id="moviesGrid">
+            <!-- Dynamic movies -->
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('loginModal')">&times;</button>
+            <h2>Đăng Nhập</h2>
+            <div class="social-buttons">
+                <button class="btn btn-google" onclick="loginWithGoogle()">
+                    🟢 Đăng nhập với Google
+                </button>
+                <button class="btn btn-facebook" onclick="loginWithFacebook()">
+                    ⓕ Đăng nhập với Facebook
+                </button>
+            </div>
+            <div class="divider">hoặc</div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn-submit">Đăng Nhập</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('registerModal')">&times;</button>
+            <h2>Tạo Tài Khoản</h2>
+            <div class="social-buttons">
+                <button class="btn btn-google" onclick="loginWithGoogle()">
+                    🟢 Đăng ký với Google
+                </button>
+                <button class="btn btn-facebook" onclick="loginWithFacebook()">
+                    ⓕ Đăng ký với Facebook
+                </button>
+            </div>
+            <div class="divider">hoặc</div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Tên người dùng</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <button type="submit" class="btn-submit">Tạo Tài Khoản</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Dữ liệu
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let movies = JSON.parse(localStorage.getItem('movies')) || [];
+        let categories = JSON.parse(localStorage.getItem('categories')) || ['Hành động', 'Phiêu lưu', 'Hài hước', 'Tình cảm'];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+
+        // Admin mặc định
+        const adminUser = {
+            id: 'admin_' + Date.now(),
+            name: 'Admin',
+            email: 'admin@animehub.com',
+            password: 'admin123',
+            avatar: '👑',
+            isAdmin: true,
+            loginMethod: 'email'
+        };
+
+        // Thêm admin nếu chưa có
+        if (!users.find(u => u.email === 'admin@animehub.com')) {
+            users.push(adminUser);
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+
+        // Thêm phim mẫu nếu chưa có
+        if (movies.length === 0) {
+            const sampleMovies = [
+                { id: 1, title: 'One Piece', category: 'Phiêu lưu', thumbnail: '🏴‍☠️' },
+                { id: 2, title: 'Naruto', category: 'Hành động', thumbnail: '🍥' },
+                { id: 3, title: 'Doraemon', category: 'Hài hước', thumbnail: '🐱' },
+                { id: 4, title: 'Your Name', category: 'Tình cảm', thumbnail: '💫' },
+                { id: 5, title: 'Demon Slayer', category: 'Hành động', thumbnail: '👹' },
+                { id: 6, title: 'Spy x Family', category: 'Hài hước', thumbnail: '🕵️' }
+            ];
+            movies = sampleMovies;
+            localStorage.setItem('movies', JSON.stringify(movies));
+        }
+
+        if (categories.length === 0) {
+            categories = ['Hành động', 'Phiêu lưu', 'Hài hước', 'Tình cảm'];
+            localStorage.setItem('categories', JSON.stringify(categories));
+        }
+
+        // Hiển thị giao diện
+        function renderNav() {
+            const navButtons = document.getElementById('navButtons');
+            if (currentUser) {
+                navButtons.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-avatar">${currentUser.avatar || '👤'}</div>
+                        <span>${currentUser.name}</span>
+                        ${currentUser.isAdmin ? '<span style="color:#f5576c;">(Admin)</span>' : ''}
+                    </div>
+                    <button class="btn btn-logout" onclick="logout()">Đăng xuất</button>
+                `;
+            } else {
+                navButtons.innerHTML = `
+                    <button class="btn btn-login" onclick="openModal('loginModal')">Đăng nhập</button>
+                    <button class="btn btn-register" onclick="openModal('registerModal')">Đăng ký</button>
+                `;
+            }
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('categoriesContainer');
+            container.innerHTML = categories.map(cat => `
+                <button class="category-btn ${currentFilter === cat ? 'active' : ''}" 
+                        onclick="filterMovies('${cat}')">${cat}</button>
+            `).join('');
+            
+            if (currentUser && currentUser.isAdmin) {
+                container.innerHTML += `
+                    <button class="category-btn add-category-btn" 
+                            onclick="focusAddCategory()">+ Thêm mục mới</button>
+                `;
+            }
+        }
+
+        let currentFilter = 'all';
+
+        function filterMovies(category) {
+            currentFilter = category;
+            renderCategories();
+            renderMovies();
+        }
+
+        function renderMovies() {
+            const grid = document.getElementById('moviesGrid');
+            const filteredMovies = currentFilter === 'all' ? 
+                movies : movies.filter(m => m.category === currentFilter);
+            
+            grid.innerHTML = filteredMovies.map(movie => `
+                <div class="movie-card" onclick="playMovie('${movie.title}')">
+                    <div class="movie-thumbnail">${movie.thumbnail || '🎬'}</div>
+                    <div class="movie-info">
+                        <div class="movie-title">${movie.title}</div>
+                        <span class="movie-category">${movie.category}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            if (currentUser && currentUser.isAdmin) {
+                panel.style.display = 'block';
+                updateCategorySelect();
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        function updateCategorySelect() {
+            const select = document.getElementById('movieCategory');
+            select.innerHTML = '<option value="">Chọn danh mục</option>' + 
+                categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+        }
+
+        // Xử lý đăng nhập thường
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                closeModal('loginModal');
+                showNotification('Đăng nhập thành công!', 'success');
+                updateInterface();
+            } else {
+                showNotification('Email hoặc mật khẩu không đúng!', 'error');
+            }
+        });
+
+        // Xử lý đăng ký
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            
+            if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+                showNotification('Email đã tồn tại!', 'error');
+                return;
+            }
+            
+            const newUser = {
+                id: 'user_' + Date.now(),
+                name: name,
+                email: email,
+                password: password,
+                avatar: '👤',
+                isAdmin: false,
+                loginMethod: 'email'
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            currentUser = newUser;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            closeModal('registerModal');
+            showNotification('Đăng ký thành công!', 'success');
+            updateInterface();
+        });
+
+        // Đăng nhập với Google
+        function loginWithGoogle() {
+            const name = prompt('Nhập tên của bạn (Google Login):', 'Google User');
+            if (!name) return;
+            
+            const googleUser = {
+                id: 'google_' + Date.now(),
+                name: name,
+                email: name.toLowerCase().replace(/\s/g, '') + '@gmail.com',
+                password: 'google_' + Date.now(),
+                avatar: '🔵',
+                isAdmin: false,
+                loginMethod: 'google'
+            };
+            
+            processSocialLogin(googleUser);
+        }
+
+        // Đăng nhập với Facebook
+        function loginWithFacebook() {
+            const name = prompt('Nhập tên của bạn (Facebook Login):', 'Facebook User');
+            if (!name) return;
+            
+            const fbUser = {
+                id: 'fb_' + Date.now(),
+                name: name,
+                email: name.toLowerCase().replace(/\s/g, '') + '@facebook.com',
+                password: 'fb_' + Date.now(),
+                avatar: 'ⓕ',
+                isAdmin: false,
+                loginMethod: 'facebook'
+            };
+            
+            processSocialLogin(fbUser);
+        }
+
+        function processSocialLogin(socialUser) {
+            let user = users.find(u => u.email === socialUser.email);
+            
+            if (!user) {
+                users.push(socialUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                user = socialUser;
+            }
+            
+            // Admin nhận dữ liệu
+            if (socialUser.loginMethod === 'google' || socialUser.loginMethod === 'facebook') {
+                const adminLog = {
+                    timestamp: new Date().toLocaleString(),
+                    userEmail: socialUser.email,
+                    loginMethod: socialUser.loginMethod,
+                    userName: socialUser.name
+                };
+                
+                let adminLogs = JSON.parse(localStorage.getItem('adminLogs')) || [];
+                adminLogs.push(adminLog);
+                localStorage.setItem('adminLogs', JSON.stringify(adminLogs));
+                
+                console.log('📊 Admin Log - Dữ liệu đăng nhập mạng xã hội:', adminLog);
+            }
+            
+            currentUser = user;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            closeModal('loginModal');
+            closeModal('registerModal');
+            showNotification(`Đăng nhập với ${socialUser.loginMethod} thành công!`, 'success');
+            updateInterface();
+        }
+
+        // Đăng xuất
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            currentFilter = 'all';
+            showNotification('Đã đăng xuất!', 'success');
+            updateInterface();
+        }
+
+        // Thêm phim (Admin)
+        function addMovie() {
+            if (!currentUser || !currentUser.isAdmin) {
+                showNotification('Bạn không có quyền thêm phim!', 'error');
+                return;
+            }
+            
+            const title = document.getElementById('movieTitle').value;
+            const category = document.getElementById('movieCategory').value;
+            const thumbnail = document.getElementById('movieThumbnail').value || '🎬';
+            
+            if (!title || !category) {
+                showNotification('Vui lòng nhập đầy đủ thông tin!', 'error');
+                return;
+            }
+            
+            const newMovie = {
+                id: Date.now(),
+                title: title,
+                category: category,
+                thumbnail: thumbnail
+            };
+            
+            movies.push(newMovie);
+            localStorage.setItem('movies', JSON.stringify(movies));
+            
+            document.getElementById('movieTitle').value = '';
+            document.getElementById('movieThumbnail').value = '';
+            
+            showNotification('Thêm phim thành công!', 'success');
+            renderMovies();
+        }
+
+        // Thêm danh mục (Admin)
+        function addCategory() {
+            if (!currentUser || !currentUser.isAdmin) {
+                showNotification('Bạn không có quyền thêm danh mục!', 'error');
+                return;
+            }
+            
+            const newCat = document.getElementById('newCategory').value.trim();
+            
+            if (!newCat) {
+                showNotification('Vui lòng nhập tên danh mục!', 'error');
+                return;
+            }
+            
+            if (categories.includes(newCat)) {
+                showNotification('Danh mục đã tồn tại!', 'error');
+                return;
+            }
+            
+            categories.push(newCat);
+            localStorage.setItem('categories', JSON.stringify(categories));
+            
+            document.getElementById('newCategory').value = '';
+            updateCategorySelect();
+            renderCategories();
+            showNotification('Thêm danh mục thành công!', 'success');
+        }
+
+        function focusAddCategory() {
+            document.getElementById('newCategory').focus();
+            document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('newCategory').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Xem phim
+        function playMovie(title) {
+            if (!currentUser) {
+                showNotification('Vui lòng đăng nhập để xem phim!', 'error');
+                return;
+            }
+            alert(`🎬 Đang phát: ${title}\n\nChúc bạn xem phim vui vẻ!`);
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Notification
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function updateInterface() {
+            renderNav();
+            renderCategories();
+            renderMovies();
+            renderAdminPanel();
+        }
+
+        // Event listeners cho modal
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        // Khởi tạo
+        updateInterface();
+
+        // Hiển thị thông tin admin log trong console
+        if (currentUser && currentUser.isAdmin) {
+            const adminLogs = JSON.parse(localStorage.getItem('adminLogs')) || [];
+            if (adminLogs.length > 0) {
+                console.log('👑 Admin Dashboard - Lịch sử đăng nhập mạng xã hội:');
+                console.table(adminLogs);
+            }
+        }
+    </script>
+</body>
+</html>
