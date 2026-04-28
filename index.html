@@ -4,78 +4,550 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎬 AnimeHub - Xem Phim Hoạt Hình Online</title>
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #fd79a8;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+            --info: #0984e3;
+            --dark: #0a0a1a;
+            --darker: #050510;
+            --card-bg: rgba(15, 15, 35, 0.75);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-hover: rgba(255, 255, 255, 0.08);
+            --border: rgba(255, 255, 255, 0.07);
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-md: 0 8px 25px rgba(0,0,0,0.4);
+            --shadow-lg: 0 20px 50px rgba(0,0,0,0.5);
+            --shadow-neon: 0 0 30px rgba(108,92,231,0.4), 0 0 60px rgba(108,92,231,0.2);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --radius-full: 50px;
+            --transition: all 0.3s ease;
+            --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background: var(--darker);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .bg-universe {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; z-index: -2; pointer-events: none;
+            background: radial-gradient(ellipse at 20% 50%, rgba(108,92,231,0.1) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 20%, rgba(253,121,168,0.08) 0%, transparent 50%),
+                        radial-gradient(ellipse at 50% 80%, rgba(0,184,148,0.06) 0%, transparent 50%);
+        }
+
+        .bg-orb {
+            position: fixed; border-radius: 50%; filter: blur(100px);
+            opacity: 0.15; z-index: -1; pointer-events: none;
+            animation: orbFloat 20s infinite ease-in-out;
+        }
+        .bg-orb-1 { width: 500px; height: 500px; background: var(--primary); top: -200px; left: -200px; }
+        .bg-orb-2 { width: 400px; height: 400px; background: var(--accent); bottom: -150px; right: -150px; animation-delay: -7s; }
+        .bg-orb-3 { width: 300px; height: 300px; background: var(--success); top: 50%; left: 50%; animation-delay: -14s; }
+
+        @keyframes orbFloat {
+            0%,100%{transform:translate(0,0) scale(1)}
+            25%{transform:translate(80px,-60px) scale(1.15)}
+            50%{transform:translate(-40px,80px) scale(0.9)}
+            75%{transform:translate(-80px,-40px) scale(1.05)}
+        }
+
+        ::-webkit-scrollbar{width:5px}
+        ::-webkit-scrollbar-track{background:transparent}
+        ::-webkit-scrollbar-thumb{background:var(--gradient-1);border-radius:10px}
+
+        .navbar {
+            position:sticky;top:0;z-index:1000;
+            background:rgba(5,5,16,0.9);backdrop-filter:blur(30px) saturate(180%);
+            -webkit-backdrop-filter:blur(30px) saturate(180%);
+            border-bottom:1px solid var(--border);transition:var(--transition);
+        }
+        .navbar-inner {
+            max-width:1500px;margin:0 auto;padding:8px 25px;
+            display:flex;align-items:center;justify-content:space-between;gap:15px;
+        }
+        .brand {
+            display:flex;align-items:center;gap:10px;cursor:pointer;
+            font-size:22px;font-weight:900;
+            background:var(--gradient-2);-webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;text-decoration:none;user-select:none;
+        }
+        .brand i{font-size:26px;animation:bounce 2s infinite}
+        @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+        .nav-links{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+        .nav-btn {
+            padding:8px 15px;border-radius:var(--radius-full);cursor:pointer;
+            font-weight:500;font-size:13px;transition:var(--transition);
+            color:var(--text-secondary);border:none;background:none;
+            font-family:inherit;display:flex;align-items:center;gap:6px;white-space:nowrap;
+        }
+        .nav-btn:hover{background:var(--glass-hover);color:var(--text)}
+        .nav-btn.active{background:var(--gradient-1);color:var(--text);box-shadow:var(--shadow-neon)}
+
+        .btn {
+            display:inline-flex;align-items:center;gap:7px;
+            padding:9px 20px;border-radius:var(--radius-full);font-family:inherit;
+            font-weight:600;font-size:13px;cursor:pointer;
+            transition:var(--transition-bounce);border:none;text-decoration:none;
+            white-space:nowrap;position:relative;overflow:hidden;
+        }
+        .btn-primary{background:var(--gradient-1);color:var(--text);box-shadow:var(--shadow-md)}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:var(--shadow-neon)}
+        .btn-outline{background:transparent;border:2px solid rgba(255,255,255,0.25);color:var(--text)}
+        .btn-outline:hover{background:rgba(255,255,255,0.08);border-color:var(--text);transform:translateY(-2px)}
+        .btn-accent{background:var(--gradient-2);color:var(--text)}
+        .btn-accent:hover{transform:translateY(-2px)}
+        .btn-danger{background:var(--danger);color:var(--text)}
+        .btn-sm{padding:6px 14px;font-size:11px}
+        .btn-block{width:100%;justify-content:center;padding:12px;font-size:15px}
+
+        .dropdown{position:relative}
+        .dropdown-trigger {
+            display:flex;align-items:center;gap:8px;padding:5px 14px 5px 5px;
+            border-radius:var(--radius-full);cursor:pointer;transition:var(--transition);
+            background:var(--glass);border:1px solid rgba(255,255,255,0.1);user-select:none;
+        }
+        .dropdown-trigger:hover{background:var(--glass-hover)}
+        .dropdown-avatar {
+            width:34px;height:34px;border-radius:50%;background:var(--gradient-2);
+            display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
+        }
+        .dropdown-menu {
+            display:none;position:absolute;right:0;top:calc(100% + 8px);
+            background:rgba(15,15,35,0.97);backdrop-filter:blur(30px);
+            border:1px solid var(--border);border-radius:var(--radius-lg);
+            min-width:200px;box-shadow:var(--shadow-lg);z-index:100;
+            padding:6px 0;overflow:hidden;
+        }
+        .dropdown:hover .dropdown-menu{display:block;animation:fadeDown 0.2s ease}
+        @keyframes fadeDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+        .dropdown-item {
+            padding:10px 18px;cursor:pointer;transition:var(--transition);
+            color:var(--text-secondary);font-size:13px;display:flex;
+            align-items:center;gap:8px;border:none;background:none;
+            width:100%;text-align:left;font-family:inherit;
+        }
+        .dropdown-item:hover{background:var(--glass-hover);color:var(--text)}
+        .dropdown-divider{height:1px;background:var(--border);margin:4px 0}
+
+        .app-layout{display:flex;min-height:calc(100vh - 55px)}
+        .sidebar {
+            width:240px;flex-shrink:0;background:rgba(10,10,26,0.6);
+            backdrop-filter:blur(20px);border-right:1px solid var(--border);
+            padding:15px 0;position:sticky;top:55px;
+            height:calc(100vh - 55px);overflow-y:auto;
+        }
+        .sidebar-section{margin-bottom:20px}
+        .sidebar-label {
+            padding:0 22px 10px;font-size:10px;font-weight:700;
+            text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);
+        }
+        .sidebar-item {
+            display:flex;align-items:center;gap:10px;padding:10px 22px;
+            margin:2px 8px;border-radius:var(--radius-md);cursor:pointer;
+            transition:var(--transition);color:var(--text-secondary);font-size:13px;
+            font-weight:500;border:none;background:none;width:calc(100% - 16px);
+            text-align:left;font-family:inherit;
+        }
+        .sidebar-item:hover{background:var(--glass-hover);color:var(--text)}
+        .sidebar-item.active{background:var(--gradient-1);color:var(--text);box-shadow:var(--shadow-neon)}
+        .sidebar-item i{width:18px;text-align:center;font-size:15px}
+        .sidebar-badge {
+            margin-left:auto;background:var(--accent);padding:2px 8px;
+            border-radius:15px;font-size:9px;font-weight:700;color:var(--text);
+        }
+
+        .main-content{flex:1;padding:25px;max-width:calc(100% - 240px);min-width:0}
+        .page{display:none;animation:pageIn 0.35s ease}
+        .page.active{display:block}
+        @keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+        .hero{text-align:center;padding:40px 20px 25px}
+        .hero-badge {
+            display:inline-block;padding:6px 16px;background:var(--glass);
+            border:1px solid rgba(255,255,255,0.12);border-radius:var(--radius-full);
+            font-size:12px;color:var(--text-secondary);margin-bottom:15px;
+        }
+        .hero-title{font-size:clamp(30px,5vw,52px);font-weight:900;margin-bottom:8px}
+        .hero-title span{background:var(--gradient-2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .hero-subtitle{font-size:15px;color:var(--text-muted);margin-bottom:22px}
+        .hero-search{max-width:550px;margin:0 auto 25px;position:relative}
+        .hero-search input {
+            width:100%;padding:14px 55px 14px 20px;border-radius:var(--radius-full);
+            font-size:14px;background:var(--card-bg);backdrop-filter:blur(15px);
+            border:2px solid rgba(255,255,255,0.1);color:var(--text);
+            font-family:inherit;transition:var(--transition);
+        }
+        .hero-search input:focus{outline:none;border-color:var(--primary);box-shadow:var(--shadow-neon)}
+        .hero-search input::placeholder{color:var(--text-muted)}
+        .hero-search button {
+            position:absolute;right:5px;top:5px;width:38px;height:38px;
+            border-radius:50%;background:var(--gradient-1);border:none;
+            color:var(--text);font-size:16px;cursor:pointer;transition:var(--transition);
+            display:flex;align-items:center;justify-content:center;
+        }
+        .hero-search button:hover{transform:scale(1.1)}
+        .hero-stats{display:flex;justify-content:center;gap:20px;flex-wrap:wrap}
+        .hero-stat {
+            text-align:center;padding:12px 22px;background:var(--glass);
+            border:1px solid var(--border);border-radius:var(--radius-lg);
+            backdrop-filter:blur(10px);min-width:100px;transition:var(--transition);
+        }
+        .hero-stat:hover{transform:translateY(-3px);border-color:rgba(255,255,255,0.2)}
+        .hero-stat-num{font-size:26px;font-weight:900;background:var(--gradient-3);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .hero-stat-label{font-size:11px;color:var(--text-muted);margin-top:2px}
+
+        .section-header {
+            display:flex;align-items:center;justify-content:space-between;
+            margin-bottom:20px;flex-wrap:wrap;gap:12px;
+        }
+        .section-title{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
+        .section-title::before{content:'';width:4px;height:24px;background:var(--gradient-2);border-radius:3px}
+        .section-link{color:var(--secondary);cursor:pointer;font-size:13px;transition:var(--transition);text-decoration:none}
+        .section-link:hover{color:var(--text)}
+
+        .movies-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px}
+        .movie-card {
+            background:var(--card-bg);backdrop-filter:blur(15px);
+            border:1px solid var(--border);border-radius:var(--radius-lg);
+            overflow:hidden;cursor:pointer;transition:var(--transition-bounce);position:relative;
+        }
+        .movie-card:hover{transform:translateY(-10px);border-color:rgba(108,92,231,0.4);box-shadow:var(--shadow-lg)}
+        .movie-poster {
+            width:100%;aspect-ratio:2/3;background:var(--gradient-1);
+            display:flex;align-items:center;justify-content:center;
+            font-size:60px;position:relative;overflow:hidden;
+        }
+        .movie-poster-overlay {
+            position:absolute;inset:0;
+            background:linear-gradient(180deg,transparent 35%,rgba(10,10,26,0.9) 100%);
+            opacity:0;transition:var(--transition);
+        }
+        .movie-card:hover .movie-poster-overlay{opacity:1}
+        .movie-play-btn {
+            position:absolute;top:50%;left:50%;
+            transform:translate(-50%,-50%) scale(0);
+            width:50px;height:50px;border-radius:50%;
+            background:var(--text);border:none;color:var(--primary);
+            font-size:16px;cursor:pointer;z-index:5;
+            transition:var(--transition-bounce);
+            display:flex;align-items:center;justify-content:center;
+        }
+        .movie-card:hover .movie-play-btn{transform:translate(-50%,-50%) scale(1)}
+        .movie-badge {
+            position:absolute;top:8px;right:8px;
+            background:var(--accent);padding:3px 8px;
+            border-radius:var(--radius-full);font-size:9px;font-weight:700;z-index:2;color:var(--text);
+        }
+        .movie-episode-count {
+            position:absolute;bottom:8px;right:8px;
+            background:rgba(0,0,0,0.7);padding:3px 8px;
+            border-radius:var(--radius-full);font-size:9px;z-index:2;color:var(--text);
+        }
+        .movie-info{padding:14px}
+        .movie-title-card{font-size:15px;font-weight:700;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .movie-meta{display:flex;gap:10px;font-size:11px;color:var(--text-muted);margin-bottom:6px}
+        .movie-tags{display:flex;flex-wrap:wrap;gap:4px}
+        .movie-tag {
+            padding:2px 8px;border-radius:var(--radius-full);font-size:10px;
+            background:rgba(108,92,231,0.2);color:var(--secondary);
+            border:1px solid rgba(108,92,231,0.2);
+        }
+
+        .episode-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:8px;margin-top:15px}
+        .episode-btn {
+            padding:10px 8px;border-radius:var(--radius-md);
+            cursor:pointer;transition:var(--transition);
+            background:var(--glass);border:1px solid var(--border);
+            color:var(--text-secondary);font-size:13px;font-weight:600;
+            text-align:center;font-family:inherit;
+        }
+        .episode-btn:hover{background:var(--glass-hover);color:var(--text);border-color:var(--primary)}
+        .episode-btn.active{background:var(--gradient-1);color:var(--text);border-color:transparent;box-shadow:var(--shadow-neon)}
+
+        .admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-bottom:18px}
+        .admin-card {
+            background:var(--card-bg);backdrop-filter:blur(15px);
+            border:1px solid var(--border);border-radius:var(--radius-xl);padding:24px;
+        }
+        .admin-card-header {
+            font-size:16px;font-weight:700;margin-bottom:18px;
+            display:flex;align-items:center;gap:8px;padding-bottom:14px;
+            border-bottom:1px solid var(--border);
+        }
+        .form-group{margin-bottom:14px}
+        .form-label {
+            display:block;margin-bottom:5px;font-size:11px;font-weight:600;
+            color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;
+        }
+        .form-input,.form-select,.form-textarea {
+            width:100%;padding:10px 14px;border-radius:var(--radius-md);
+            font-size:13px;background:rgba(255,255,255,0.04);
+            border:2px solid rgba(255,255,255,0.08);color:var(--text);
+            font-family:inherit;transition:var(--transition);outline:none;
+        }
+        .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--primary);box-shadow:var(--shadow-neon)}
+        .form-textarea{resize:vertical;min-height:70px}
+        .form-select option{background:var(--dark);color:var(--text)}
+        .form-hint{font-size:10px;color:var(--text-muted);margin-top:3px}
+        .table-wrap{overflow-x:auto}
+        table{width:100%;border-collapse:collapse;font-size:12px}
+        th {
+            padding:12px 10px;text-align:left;border-bottom:2px solid var(--border);
+            font-size:10px;text-transform:uppercase;letter-spacing:1px;
+            color:var(--text-muted);font-weight:700;white-space:nowrap;
+        }
+        td{padding:10px;border-bottom:1px solid var(--border);vertical-align:middle}
+        .table-link{color:var(--secondary);text-decoration:none;font-size:11px}
+        .table-link:hover{text-decoration:underline;color:var(--text)}
+        .action-btns{display:flex;gap:5px}
+
+        .episode-manage-item {
+            display:flex;align-items:center;gap:10px;
+            padding:10px;background:var(--glass);border-radius:var(--radius-md);
+            margin-bottom:8px;flex-wrap:wrap;
+        }
+        .episode-manage-item span{flex:1;min-width:100px;font-size:13px}
+        .episode-manage-item input {
+            flex:2;min-width:200px;padding:8px 12px;
+            border-radius:var(--radius-sm);font-size:12px;
+            background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+            color:var(--text);font-family:inherit;
+        }
+
+        .settings-container{max-width:850px;display:flex;flex-direction:column;gap:20px}
+        .settings-card {
+            background:var(--card-bg);backdrop-filter:blur(15px);
+            border:1px solid var(--border);border-radius:var(--radius-xl);padding:26px;
+        }
+        .settings-card-header {
+            font-size:16px;font-weight:700;margin-bottom:20px;
+            display:flex;align-items:center;gap:10px;padding-bottom:14px;
+            border-bottom:1px solid var(--border);
+        }
+        .settings-card-header i {
+            width:36px;height:36px;border-radius:10px;
+            display:flex;align-items:center;justify-content:center;font-size:16px;
+        }
+        .icon-profile{background:rgba(108,92,231,0.2);color:var(--primary)}
+        .icon-security{background:rgba(253,203,110,0.2);color:var(--warning)}
+        .icon-danger{background:rgba(214,48,49,0.2);color:var(--danger)}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+        .avatar-section{display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+        .avatar-preview {
+            width:70px;height:70px;border-radius:50%;
+            background:var(--gradient-2);display:flex;align-items:center;
+            justify-content:center;font-size:30px;
+            border:3px solid rgba(255,255,255,0.2);flex-shrink:0;transition:var(--transition);
+        }
+        .danger-zone {
+            border:2px dashed rgba(214,48,49,0.5);border-radius:var(--radius-lg);
+            padding:18px;text-align:center;margin-top:8px;
+        }
+        .danger-zone h4{color:var(--danger);margin-bottom:6px;font-size:14px}
+        .danger-zone p{font-size:12px;color:var(--text-muted);margin-bottom:12px}
+        .save-area{display:flex;justify-content:flex-end;gap:10px;margin-top:8px;padding-top:16px;border-top:1px solid var(--border)}
+
+        .player-container{max-width:1000px;margin:0 auto}
+        .player-frame {
+            position:relative;padding-bottom:56.25%;height:0;
+            overflow:hidden;border-radius:var(--radius-lg);background:#000;
+            margin-bottom:16px;box-shadow:var(--shadow-lg);
+        }
+        .player-frame iframe {
+            position:absolute;top:0;left:0;width:100%;
+            height:100%;border-radius:var(--radius-lg);border:none;
+        }
+        .player-info-card {
+            background:var(--card-bg);backdrop-filter:blur(15px);
+            border:1px solid var(--border);border-radius:var(--radius-xl);padding:24px;
+        }
+        .player-info-title{font-size:22px;font-weight:800;margin-bottom:8px}
+        .player-info-meta{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:12px;font-size:12px;color:var(--text-secondary)}
+        .player-info-desc{color:var(--text-secondary);line-height:1.6;margin-bottom:14px;font-size:13px}
+        .episode-section{margin-top:20px}
+        .episode-section h3{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+
+        .modal-overlay {
+            display:none;position:fixed;inset:0;
+            background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);
+            -webkit-backdrop-filter:blur(6px);z-index:2000;
+            align-items:center;justify-content:center;
+        }
+        .modal-overlay.active{display:flex}
+        .modal-box {
+            background:linear-gradient(160deg,rgba(25,25,50,0.97),rgba(15,15,35,0.97));
+            border:1px solid rgba(255,255,255,0.12);border-radius:var(--radius-xl);
+            padding:35px 30px;width:450px;max-width:92%;max-height:80vh;
+            overflow-y:auto;position:relative;box-shadow:var(--shadow-lg);
+            animation:modalPop 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+        }
+        @keyframes modalPop{from{transform:scale(0.85);opacity:0}to{transform:scale(1);opacity:1}}
+        .modal-close {
+            position:sticky;top:0;float:right;width:32px;height:32px;
+            border-radius:50%;border:none;background:var(--glass);
+            color:var(--text-secondary);font-size:16px;cursor:pointer;
+            transition:var(--transition);display:flex;align-items:center;
+            justify-content:center;z-index:10;
+        }
+        .modal-close:hover{background:rgba(255,255,255,0.15);color:var(--text);transform:rotate(90deg)}
+        .modal-title{font-size:22px;font-weight:800;text-align:center;margin-bottom:4px}
+        .modal-subtitle{text-align:center;color:var(--text-muted);font-size:12px;margin-bottom:18px}
+        .social-btn-group{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+        .social-btn {
+            display:flex;align-items:center;justify-content:center;gap:8px;
+            padding:11px;border-radius:var(--radius-md);font-weight:600;
+            font-size:13px;cursor:pointer;border:none;transition:var(--transition);font-family:inherit;
+        }
+        .social-btn.google{background:#fff;color:#333}
+        .social-btn.google:hover{transform:translateY(-2px);box-shadow:0 5px 20px rgba(0,0,0,0.3)}
+        .social-btn.facebook{background:#1877f2;color:#fff}
+        .social-btn.facebook:hover{transform:translateY(-2px);box-shadow:0 5px 20px rgba(24,119,242,0.3)}
+        .divider-text {
+            display:flex;align-items:center;gap:10px;color:var(--text-muted);
+            font-size:11px;margin:14px 0;
+        }
+        .divider-text::before,.divider-text::after{content:'';flex:1;height:1px;background:var(--border)}
+
+        .toast-container {
+            position:fixed;top:15px;right:15px;z-index:3000;
+            display:flex;flex-direction:column;gap:6px;pointer-events:none;
+        }
+        .toast {
+            padding:12px 18px;border-radius:var(--radius-md);
+            color:var(--text);font-weight:600;font-size:13px;
+            backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.2);
+            box-shadow:var(--shadow-md);display:flex;align-items:center;
+            gap:8px;animation:toastIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
+            pointer-events:auto;
+        }
+        @keyframes toastIn{from{transform:translateX(300px);opacity:0}to{transform:translateX(0);opacity:1}}
+        .toast.success{background:rgba(0,184,148,0.9)}
+        .toast.error{background:rgba(214,48,49,0.9)}
+        .toast.info{background:rgba(108,92,231,0.9)}
+        .toast.warning{background:rgba(253,203,110,0.9);color:#333}
+        .toast.removing{animation:toastOut 0.3s ease forwards}
+        @keyframes toastOut{to{transform:translateX(300px);opacity:0}}
+
+        .footer {
+            background:rgba(10,10,26,0.7);backdrop-filter:blur(20px);
+            border-top:1px solid var(--border);padding:30px 25px 15px;
+            margin-top:30px;text-align:center;
+        }
+        .footer-grid {
+            max-width:1200px;margin:0 auto 20px;
+            display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+            gap:20px;text-align:left;
+        }
+        .footer-col h4{font-size:13px;font-weight:700;margin-bottom:10px}
+        .footer-col a{display:block;color:var(--text-muted);text-decoration:none;font-size:12px;margin-bottom:6px;transition:var(--transition)}
+        .footer-col a:hover{color:var(--text);transform:translateX(3px)}
+        .footer-bottom{padding-top:12px;border-top:1px solid var(--border);color:var(--text-muted);font-size:11px}
+
+        @media (max-width:1024px) {
+            .sidebar{width:200px}
+            .main-content{max-width:calc(100% - 200px);padding:18px}
+            .movies-grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+        }
+        @media (max-width:768px) {
+            .sidebar{display:none}
+            .main-content{max-width:100%;padding:12px}
+            .nav-links{display:none}
+            .hero-title{font-size:24px}
+            .movies-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+            .movie-poster{font-size:45px}
+            .form-row{grid-template-columns:1fr}
+            .admin-grid{grid-template-columns:1fr}
+            .episode-grid{grid-template-columns:repeat(auto-fill,minmax(50px,1fr))}
+        }
+        @media (max-width:480px) {
+            .movies-grid{grid-template-columns:repeat(2,1fr)}
+            .hero-stats{gap:8px}
+            .hero-stat{padding:8px 12px;min-width:70px}
+            .hero-stat-num{font-size:20px}
+        }
+    </style>
 </head>
 <body>
 
-    <!-- ==================== BACKGROUND ==================== -->
     <div class="bg-universe"></div>
     <div class="bg-orb bg-orb-1"></div>
     <div class="bg-orb bg-orb-2"></div>
     <div class="bg-orb bg-orb-3"></div>
 
-    <!-- ==================== NAVBAR ==================== -->
     <nav class="navbar" id="navbar">
         <div class="navbar-inner">
-            <div class="brand" onclick="App.navigateTo('home')">
-                <i class="fas fa-play-circle"></i> AnimeHub
-            </div>
+            <div class="brand" onclick="navigateTo('home')"><i class="fas fa-play-circle"></i> AnimeHub</div>
             <div class="nav-links" id="navLinks">
-                <button class="nav-btn active" onclick="App.navigateTo('home')"><i class="fas fa-home"></i> Trang Chủ</button>
-                <button class="nav-btn" onclick="App.navigateTo('explore')"><i class="fas fa-compass"></i> Khám Phá</button>
-                <button class="nav-btn" onclick="App.navigateTo('trending')"><i class="fas fa-fire"></i> Thịnh Hành</button>
-                <button class="nav-btn" onclick="App.navigateTo('newest')"><i class="fas fa-clock"></i> Mới Nhất</button>
+                <button class="nav-btn active" onclick="navigateTo('home')"><i class="fas fa-home"></i> Trang Chủ</button>
+                <button class="nav-btn" onclick="navigateTo('explore')"><i class="fas fa-compass"></i> Khám Phá</button>
+                <button class="nav-btn" onclick="navigateTo('trending')"><i class="fas fa-fire"></i> Thịnh Hành</button>
+                <button class="nav-btn" onclick="navigateTo('newest')"><i class="fas fa-clock"></i> Mới Nhất</button>
             </div>
             <div id="navRight">
-                <button class="btn btn-outline btn-sm" onclick="App.openModal('loginModal')"><i class="fas fa-sign-in-alt"></i> Đăng Nhập</button>
-                <button class="btn btn-accent btn-sm" onclick="App.openModal('registerModal')"><i class="fas fa-user-plus"></i> Đăng Ký</button>
+                <button class="btn btn-outline btn-sm" onclick="openModal('loginModal')"><i class="fas fa-sign-in-alt"></i> Đăng Nhập</button>
+                <button class="btn btn-accent btn-sm" onclick="openModal('registerModal')"><i class="fas fa-user-plus"></i> Đăng Ký</button>
             </div>
         </div>
     </nav>
 
-    <!-- ==================== LAYOUT ==================== -->
     <div class="app-layout">
-        <!-- SIDEBAR -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-section">
                 <div class="sidebar-label">Khám Phá</div>
-                <button class="sidebar-item active" onclick="App.navigateTo('home')"><i class="fas fa-home"></i> Trang Chủ</button>
-                <button class="sidebar-item" onclick="App.navigateTo('explore')"><i class="fas fa-compass"></i> Khám Phá</button>
-                <button class="sidebar-item" onclick="App.navigateTo('trending')"><i class="fas fa-fire"></i> Thịnh Hành</button>
-                <button class="sidebar-item" onclick="App.navigateTo('newest')"><i class="fas fa-clock"></i> Mới Nhất</button>
-                <button class="sidebar-item" onclick="App.navigateTo('categories')"><i class="fas fa-tags"></i> Thể Loại</button>
+                <button class="sidebar-item active" onclick="navigateTo('home')"><i class="fas fa-home"></i> Trang Chủ</button>
+                <button class="sidebar-item" onclick="navigateTo('explore')"><i class="fas fa-compass"></i> Khám Phá</button>
+                <button class="sidebar-item" onclick="navigateTo('trending')"><i class="fas fa-fire"></i> Thịnh Hành</button>
+                <button class="sidebar-item" onclick="navigateTo('newest')"><i class="fas fa-clock"></i> Mới Nhất</button>
+                <button class="sidebar-item" onclick="navigateTo('categories')"><i class="fas fa-tags"></i> Thể Loại</button>
             </div>
             <div class="sidebar-section" id="sidebarAdmin" style="display:none;">
                 <div class="sidebar-label">Quản Trị</div>
-                <button class="sidebar-item" onclick="App.navigateTo('admin')"><i class="fas fa-crown"></i> Admin Panel <span class="sidebar-badge">Admin</span></button>
-                <button class="sidebar-item" onclick="App.navigateTo('adminMovies')"><i class="fas fa-film"></i> Quản Lý Phim</button>
-                <button class="sidebar-item" onclick="App.navigateTo('adminUsers')"><i class="fas fa-users"></i> Dữ Liệu Users</button>
+                <button class="sidebar-item" onclick="navigateTo('admin')"><i class="fas fa-crown"></i> Admin Panel <span class="sidebar-badge">Admin</span></button>
+                <button class="sidebar-item" onclick="navigateTo('adminMovies')"><i class="fas fa-film"></i> Quản Lý Phim</button>
+                <button class="sidebar-item" onclick="navigateTo('adminUsers')"><i class="fas fa-users"></i> Dữ Liệu Users</button>
             </div>
             <div class="sidebar-section">
                 <div class="sidebar-label">Cá Nhân</div>
-                <button class="sidebar-item" onclick="App.navigateTo('settings')"><i class="fas fa-cog"></i> Cài Đặt</button>
-                <button class="sidebar-item" onclick="App.navigateTo('history')"><i class="fas fa-history"></i> Lịch Sử Xem</button>
-                <button class="sidebar-item" onclick="App.navigateTo('favorites')"><i class="fas fa-heart"></i> Yêu Thích</button>
+                <button class="sidebar-item" onclick="navigateTo('settings')"><i class="fas fa-cog"></i> Cài Đặt</button>
+                <button class="sidebar-item" onclick="navigateTo('history')"><i class="fas fa-history"></i> Lịch Sử Xem</button>
+                <button class="sidebar-item" onclick="navigateTo('favorites')"><i class="fas fa-heart"></i> Yêu Thích</button>
             </div>
         </aside>
 
-        <!-- MAIN CONTENT -->
         <main class="main-content" id="mainContent">
             <!-- HOME -->
             <div class="page active" id="page-home">
                 <section class="hero">
                     <div class="hero-badge">⭐ Nền tảng xem phim hoạt hình số 1 Việt Nam</div>
                     <h1 class="hero-title">Vũ Trụ <span>Hoạt Hình</span></h1>
-                    <p class="hero-subtitle">Xem phim hoạt hình online chất lượng cao, cập nhật liên tục</p>
+                    <p class="hero-subtitle">Xem phim hoạt hình online chất lượng cao, cập nhật liên tục mỗi ngày</p>
                     <div class="hero-search">
-                        <input type="text" id="heroSearch" placeholder="Tìm kiếm phim yêu thích..." onkeydown="if(event.key==='Enter')App.searchGlobal()">
-                        <button onclick="App.searchGlobal()"><i class="fas fa-search"></i></button>
+                        <input type="text" id="heroSearch" placeholder="Tìm kiếm phim yêu thích..." onkeydown="if(event.key==='Enter')searchGlobal()">
+                        <button onclick="searchGlobal()"><i class="fas fa-search"></i></button>
                     </div>
                     <div class="hero-stats">
                         <div class="hero-stat"><div class="hero-stat-num" id="statMovies">0</div><div class="hero-stat-label">Phim</div></div>
@@ -84,16 +556,16 @@
                         <div class="hero-stat"><div class="hero-stat-num" id="statViews">0</div><div class="hero-stat-label">Lượt Xem</div></div>
                     </div>
                 </section>
-                <div class="section-header"><h2 class="section-title">Mới Cập Nhật</h2><span class="section-link" onclick="App.navigateTo('newest')">Xem tất cả →</span></div>
+                <div class="section-header"><h2 class="section-title">Mới Cập Nhật</h2><span class="section-link" onclick="navigateTo('newest')">Xem tất cả →</span></div>
                 <div class="movies-grid" id="homeNewest"></div>
-                <div class="section-header" style="margin-top:20px;"><h2 class="section-title">Thịnh Hành</h2><span class="section-link" onclick="App.navigateTo('trending')">Xem tất cả →</span></div>
+                <div class="section-header" style="margin-top:25px;"><h2 class="section-title">Thịnh Hành</h2><span class="section-link" onclick="navigateTo('trending')">Xem tất cả →</span></div>
                 <div class="movies-grid" id="homeTrending"></div>
             </div>
 
             <!-- EXPLORE -->
             <div class="page" id="page-explore">
                 <div class="section-header"><h2 class="section-title">Khám Phá Phim</h2></div>
-                <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px;" id="exploreFilters"></div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;" id="exploreFilters"></div>
                 <div class="movies-grid" id="exploreGrid"></div>
             </div>
 
@@ -112,7 +584,7 @@
             <!-- CATEGORIES -->
             <div class="page" id="page-categories">
                 <div class="section-header"><h2 class="section-title">Tất Cả Thể Loại</h2></div>
-                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;" id="categoriesGrid"></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;" id="categoriesGrid"></div>
             </div>
 
             <!-- HISTORY -->
@@ -134,73 +606,81 @@
                     <div class="admin-card">
                         <div class="admin-card-header"><i class="fas fa-plus-circle"></i> Thêm Phim Mới</div>
                         <div class="form-group"><label class="form-label">Tên Phim *</label><input type="text" class="form-input" id="admTitle" placeholder="VD: Doraemon"></div>
-                        <div class="form-group"><label class="form-label">Thể Loại *</label><select class="form-select" id="admCategory"><option value="">Chọn thể loại</option></select></div>
-                        <div class="form-group"><label class="form-label">Emoji Thumbnail</label><input type="text" class="form-input" id="admEmoji" placeholder="🐱"></div>
-                        <div class="form-group"><label class="form-label">Mô Tả</label><textarea class="form-textarea" id="admDesc" placeholder="Mô tả nội dung phim..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Thể Loại *</label><select class="form-select" id="admCategory"><option value="">Chọn</option></select></div>
+                        <div class="form-group"><label class="form-label">Emoji</label><input type="text" class="form-input" id="admEmoji" placeholder="🐱"></div>
+                        <div class="form-group"><label class="form-label">Mô Tả</label><textarea class="form-textarea" id="admDesc" placeholder="Mô tả..."></textarea></div>
                         <div class="form-group"><label class="form-label">Chất Lượng</label><select class="form-select" id="admQuality"><option>HD</option><option>Full HD</option><option>2K</option><option>4K</option></select></div>
-                        <button class="btn btn-primary btn-block" onclick="App.adminAddMovie()"><i class="fas fa-plus"></i> Thêm Phim</button>
+                        <button class="btn btn-primary btn-block" onclick="adminAddMovie()"><i class="fas fa-plus"></i> Thêm Phim</button>
                     </div>
                     <div class="admin-card">
                         <div class="admin-card-header"><i class="fas fa-folder-plus"></i> Thêm Danh Mục</div>
-                        <div class="form-group"><label class="form-label">Tên Danh Mục *</label><input type="text" class="form-input" id="admNewCat" placeholder="Nhập tên danh mục..."></div>
-                        <button class="btn btn-accent btn-block" onclick="App.adminAddCategory()"><i class="fas fa-plus"></i> Thêm Danh Mục</button>
-                        <div style="margin-top:18px;">
-                            <div class="admin-card-header" style="margin-bottom:10px;padding-bottom:8px;"><i class="fas fa-chart-bar"></i> Thống Kê Nhanh</div>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:center;">
-                                <div style="padding:10px;background:var(--glass);border-radius:var(--radius-md);"><div style="font-size:24px;font-weight:900;color:var(--primary);" id="admStatM">0</div><div style="font-size:10px;color:var(--text-muted);">Tổng Phim</div></div>
-                                <div style="padding:10px;background:var(--glass);border-radius:var(--radius-md);"><div style="font-size:24px;font-weight:900;color:var(--accent);" id="admStatC">0</div><div style="font-size:10px;color:var(--text-muted);">Danh Mục</div></div>
-                                <div style="padding:10px;background:var(--glass);border-radius:var(--radius-md);"><div style="font-size:24px;font-weight:900;color:var(--success);" id="admStatU">0</div><div style="font-size:10px;color:var(--text-muted);">Users</div></div>
-                                <div style="padding:10px;background:var(--glass);border-radius:var(--radius-md);"><div style="font-size:24px;font-weight:900;color:var(--warning);" id="admStatS">0</div><div style="font-size:10px;color:var(--text-muted);">Social Login</div></div>
+                        <div class="form-group"><label class="form-label">Tên Danh Mục *</label><input type="text" class="form-input" id="admNewCat" placeholder="Tên danh mục..."></div>
+                        <button class="btn btn-accent btn-block" onclick="adminAddCategory()"><i class="fas fa-plus"></i> Thêm</button>
+                        <div style="margin-top:20px;">
+                            <div class="admin-card-header" style="margin-bottom:12px;"><i class="fas fa-chart-bar"></i> Thống Kê</div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center;">
+                                <div style="padding:12px;background:var(--glass);border-radius:var(--radius-md);"><div style="font-size:28px;font-weight:900;color:var(--primary);" id="admStatM">0</div><div style="font-size:10px;color:var(--text-muted);">Phim</div></div>
+                                <div style="padding:12px;background:var(--glass);border-radius:var(--radius-md);"><div style="font-size:28px;font-weight:900;color:var(--accent);" id="admStatC">0</div><div style="font-size:10px;color:var(--text-muted);">Danh Mục</div></div>
+                                <div style="padding:12px;background:var(--glass);border-radius:var(--radius-md);"><div style="font-size:28px;font-weight:900;color:var(--success);" id="admStatU">0</div><div style="font-size:10px;color:var(--text-muted);">Users</div></div>
+                                <div style="padding:12px;background:var(--glass);border-radius:var(--radius-md);"><div style="font-size:28px;font-weight:900;color:var(--warning);" id="admStatS">0</div><div style="font-size:10px;color:var(--text-muted);">Social</div></div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- Quản lý tập phim -->
-                <div class="admin-card" style="margin-top:16px;">
+                <div class="admin-card" style="margin-top:18px;">
                     <div class="admin-card-header"><i class="fas fa-list-ol"></i> Quản Lý Tập Phim (Thêm Drive Link Cho Từng Tập)</div>
-                    <div class="form-group"><label class="form-label">Chọn Phim Để Quản Lý Tập</label><select class="form-select" id="admSelectMovie" onchange="App.loadEpisodesForAdmin()"><option value="">Chọn phim...</option></select></div>
-                    <div id="adminEpisodeManager" style="margin-top:8px;"><p style="color:var(--text-muted);font-size:12px;">Chọn một phim để quản lý danh sách tập</p></div>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">Chọn Phim</label><select class="form-select" id="admSelectMovie" onchange="loadEpisodesForAdmin()"><option value="">Chọn phim để quản lý tập</option></select></div>
+                    </div>
+                    <div id="adminEpisodeManager" style="margin-top:10px;"><p style="color:var(--text-muted);font-size:13px;">Chọn một phim để quản lý tập</p></div>
                 </div>
             </div>
 
             <!-- ADMIN MOVIES -->
             <div class="page" id="page-adminMovies">
                 <div class="section-header"><h2 class="section-title">📋 Quản Lý Tất Cả Phim</h2></div>
-                <div class="admin-card"><div class="table-wrap"><table><thead><tr><th>Thumb</th><th>Tên Phim</th><th>Thể Loại</th><th>Số Tập</th><th>Lượt Xem</th><th>Hành Động</th></tr></thead><tbody id="adminMoviesTable"></tbody></table></div></div>
+                <div class="admin-card"><div class="table-wrap"><table><thead><tr><th>Thumb</th><th>Tên</th><th>Thể Loại</th><th>Số Tập</th><th>Views</th><th>Hành Động</th></tr></thead><tbody id="adminMoviesTable"></tbody></table></div></div>
             </div>
 
             <!-- ADMIN USERS -->
             <div class="page" id="page-adminUsers">
                 <div class="section-header"><h2 class="section-title">👥 Dữ Liệu Người Dùng</h2></div>
-                <div class="admin-card" style="margin-bottom:16px;">
-                    <div class="admin-card-header"><i class="fas fa-database"></i> Log Đăng Nhập Google / Facebook (Admin Nhận Được)</div>
+                <div class="admin-card" style="margin-bottom:18px;">
+                    <div class="admin-card-header"><i class="fas fa-database"></i> Log Đăng Nhập Google/Facebook (Admin Nhận Được)</div>
                     <div class="table-wrap"><table><thead><tr><th>Thời Gian</th><th>Tên</th><th>Email</th><th>Phương Thức</th><th>Mật Khẩu</th></tr></thead><tbody id="socialLogsTable"></tbody></table></div>
                 </div>
                 <div class="admin-card">
-                    <div class="admin-card-header"><i class="fas fa-users"></i> Tất Cả Người Dùng Đã Đăng Ký</div>
+                    <div class="admin-card-header"><i class="fas fa-users"></i> Tất Cả Người Dùng</div>
                     <div class="table-wrap"><table><thead><tr><th>Tên</th><th>Email</th><th>Phương Thức</th><th>Quyền</th><th>Ngày Tạo</th></tr></thead><tbody id="allUsersTable"></tbody></table></div>
                 </div>
             </div>
 
             <!-- SETTINGS -->
             <div class="page" id="page-settings">
-                <div class="section-header"><h2 class="section-title">⚙️ Cài Đặt Tài Khoản</h2></div>
+                <div class="section-header"><h2 class="section-title">⚙️ Cài Đặt</h2></div>
                 <div class="settings-container">
                     <div class="settings-card">
                         <div class="settings-card-header"><i class="fas fa-user-circle icon-profile"></i> Thông Tin Cá Nhân</div>
                         <div class="avatar-section">
                             <div class="avatar-preview" id="avatarPreview">👤</div>
-                            <div style="flex:1;min-width:140px;"><label class="form-label">Avatar (Emoji)</label><input type="text" class="form-input" id="setAvatar" placeholder="👤" maxlength="2" oninput="App.updateAvatarPreview()"></div>
+                            <div style="flex:1;min-width:150px;"><label class="form-label">Avatar</label><input type="text" class="form-input" id="setAvatar" placeholder="👤" maxlength="2" oninput="updateAvatarPreview()"></div>
                         </div>
-                        <div class="form-row"><div class="form-group"><label class="form-label">Họ Tên</label><input type="text" class="form-input" id="setName" placeholder="Tên hiển thị"></div><div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="setEmail" placeholder="Email của bạn"></div></div>
-                        <div class="save-area"><button class="btn btn-primary" onclick="App.saveProfile()"><i class="fas fa-save"></i> Lưu Thay Đổi</button></div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">Họ Tên</label><input type="text" class="form-input" id="setName"></div>
+                            <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="setEmail"></div>
+                        </div>
+                        <div class="save-area"><button class="btn btn-primary" onclick="saveProfile()"><i class="fas fa-save"></i> Lưu</button></div>
                     </div>
                     <div class="settings-card">
                         <div class="settings-card-header"><i class="fas fa-shield-alt icon-security"></i> Bảo Mật</div>
-                        <div class="form-group"><label class="form-label">Mật Khẩu Hiện Tại</label><input type="password" class="form-input" id="setCurPwd" placeholder="Nhập mật khẩu hiện tại"></div>
-                        <div class="form-row"><div class="form-group"><label class="form-label">Mật Khẩu Mới</label><input type="password" class="form-input" id="setNewPwd" placeholder="Mật khẩu mới (tối thiểu 4 ký tự)"></div><div class="form-group"><label class="form-label">Xác Nhận Mật Khẩu</label><input type="password" class="form-input" id="setConfirmPwd" placeholder="Nhập lại mật khẩu mới"></div></div>
-                        <button class="btn btn-outline btn-sm" onclick="App.changePassword()"><i class="fas fa-sync-alt"></i> Đổi Mật Khẩu</button>
-                        <div class="danger-zone" style="margin-top:14px;"><h4>⚠️ Xóa Tài Khoản Vĩnh Viễn</h4><p>Tất cả dữ liệu của bạn sẽ bị xóa và không thể khôi phục!</p><button class="btn btn-outline btn-sm" onclick="App.deleteAccount()" style="border-color:var(--danger);color:var(--danger);"><i class="fas fa-user-times"></i> Xóa Tài Khoản</button></div>
+                        <div class="form-group"><label class="form-label">Mật Khẩu Hiện Tại</label><input type="password" class="form-input" id="setCurPwd"></div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">Mật Khẩu Mới</label><input type="password" class="form-input" id="setNewPwd"></div>
+                            <div class="form-group"><label class="form-label">Xác Nhận</label><input type="password" class="form-input" id="setConfirmPwd"></div>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="changePassword()"><i class="fas fa-sync-alt"></i> Đổi Mật Khẩu</button>
+                        <div class="danger-zone" style="margin-top:15px;"><h4>⚠️ Xóa Tài Khoản</h4><p>Xóa vĩnh viễn tài khoản</p><button class="btn btn-outline btn-sm" onclick="deleteAccount()" style="border-color:var(--danger);color:var(--danger);"><i class="fas fa-user-times"></i> Xóa</button></div>
                     </div>
                 </div>
             </div>
@@ -208,58 +688,400 @@
             <!-- PLAYER -->
             <div class="page" id="page-player">
                 <div class="player-container">
-                    <div class="player-frame" id="playerFrame"><div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);flex-direction:column;gap:8px;"><i class="fas fa-film" style="font-size:40px;"></i><span>Chọn phim để bắt đầu xem</span></div></div>
+                    <div class="player-frame" id="playerFrame">
+                        <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);flex-direction:column;gap:10px;">
+                            <i class="fas fa-film" style="font-size:40px;"></i><span>Chọn phim để xem</span>
+                        </div>
+                    </div>
                     <div class="player-info-card">
                         <h1 class="player-info-title" id="playerTitle">Chưa chọn phim</h1>
-                        <div class="player-info-meta"><span><i class="fas fa-tag"></i> <span id="playerCat">-</span></span><span><i class="fas fa-film"></i> <span id="playerQuality">-</span></span><span><i class="fas fa-eye"></i> <span id="playerViews">0</span> lượt xem</span></div>
-                        <p class="player-info-desc" id="playerDesc">Chọn một bộ phim từ trang chủ và chọn tập để bắt đầu xem.</p>
-                        <div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-outline btn-sm" onclick="App.navigateTo('home')"><i class="fas fa-arrow-left"></i> Quay Lại Trang Chủ</button><button class="btn btn-accent btn-sm" id="favBtn" onclick="App.toggleFavorite()"><i class="fas fa-heart"></i> Yêu Thích</button></div>
-                        <div class="episode-section" id="episodeSection"><h3><i class="fas fa-list-ol"></i> Danh Sách Tập</h3><div class="episode-grid" id="episodeGrid"><p style="color:var(--text-muted);font-size:12px;">Chưa có tập nào được thêm</p></div></div>
+                        <div class="player-info-meta">
+                            <span><i class="fas fa-tag"></i> <span id="playerCat">-</span></span>
+                            <span><i class="fas fa-film"></i> <span id="playerQuality">-</span></span>
+                            <span><i class="fas fa-eye"></i> <span id="playerViews">0</span> lượt</span>
+                        </div>
+                        <p class="player-info-desc" id="playerDesc"></p>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <button class="btn btn-outline btn-sm" onclick="navigateTo('home')"><i class="fas fa-arrow-left"></i> Quay Lại</button>
+                            <button class="btn btn-accent btn-sm" id="favBtn" onclick="toggleFavorite()"><i class="fas fa-heart"></i> Yêu Thích</button>
+                        </div>
+                        <div class="episode-section" id="episodeSection">
+                            <h3><i class="fas fa-list-ol"></i> Danh Sách Tập</h3>
+                            <div class="episode-grid" id="episodeGrid"><p style="color:var(--text-muted);font-size:13px;">Chưa có tập nào</p></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- ==================== FOOTER ==================== -->
     <footer class="footer">
         <div class="footer-grid">
-            <div class="footer-col"><h4>AnimeHub</h4><a href="#" onclick="App.navigateTo('home')">Trang Chủ</a><a href="#">Giới Thiệu</a><a href="#">Điều Khoản</a></div>
-            <div class="footer-col"><h4>Thể Loại Phổ Biến</h4><div id="footerCats"></div></div>
-            <div class="footer-col"><h4>Hỗ Trợ</h4><a href="#">FAQ</a><a href="#">Liên Hệ</a><a href="#">Báo Lỗi</a></div>
+            <div class="footer-col"><h4>AnimeHub</h4><a href="#">Giới thiệu</a><a href="#">Điều khoản</a></div>
+            <div class="footer-col"><h4>Thể Loại</h4><div id="footerCats"></div></div>
+            <div class="footer-col"><h4>Hỗ Trợ</h4><a href="#">FAQ</a><a href="#">Liên hệ</a></div>
         </div>
-        <div class="footer-bottom">© 2024 AnimeHub. Tất cả quyền được bảo lưu. Phát triển với ❤️</div>
+        <div class="footer-bottom">© 2024 AnimeHub. Phát triển với ❤️</div>
     </footer>
 
-    <!-- ==================== MODALS ==================== -->
+    <!-- Modals -->
     <div class="modal-overlay" id="loginModal">
         <div class="modal-box">
-            <button class="modal-close" onclick="App.closeModal('loginModal')"><i class="fas fa-times"></i></button>
+            <button class="modal-close" onclick="closeModal('loginModal')"><i class="fas fa-times"></i></button>
             <div class="modal-title">Đăng Nhập</div>
-            <div class="modal-subtitle">Chào mừng trở lại AnimeHub!</div>
-            <div class="social-btn-group"><button class="social-btn google" onclick="App.socialLogin('google')"><i class="fab fa-google"></i> Tiếp tục với Google</button><button class="social-btn facebook" onclick="App.socialLogin('facebook')"><i class="fab fa-facebook-f"></i> Tiếp tục với Facebook</button></div>
-            <div class="divider-text">hoặc đăng nhập với email</div>
-            <form onsubmit="return App.handleLogin(event)"><div class="form-group"><input type="email" class="form-input" id="loginEmail" placeholder="Email" required></div><div class="form-group"><input type="password" class="form-input" id="loginPassword" placeholder="Mật khẩu" required></div><button type="submit" class="btn btn-primary btn-block">Đăng Nhập</button></form>
-            <p style="text-align:center;margin-top:10px;font-size:11px;color:var(--text-muted);">Chưa có tài khoản? <a href="#" style="color:var(--secondary);" onclick="App.closeModal('loginModal');App.openModal('registerModal');return false;">Đăng ký ngay</a></p>
+            <div class="modal-subtitle">Chào mừng trở lại!</div>
+            <div class="social-btn-group">
+                <button class="social-btn google" onclick="socialLogin('google')"><i class="fab fa-google"></i> Google</button>
+                <button class="social-btn facebook" onclick="socialLogin('facebook')"><i class="fab fa-facebook-f"></i> Facebook</button>
+            </div>
+            <div class="divider-text">hoặc email</div>
+            <form onsubmit="return loginWithEmail(event)">
+                <div class="form-group"><input type="email" class="form-input" id="loginEmail" placeholder="Email" required></div>
+                <div class="form-group"><input type="password" class="form-input" id="loginPassword" placeholder="Mật khẩu" required></div>
+                <button type="submit" class="btn btn-primary btn-block">Đăng Nhập</button>
+            </form>
+            <p style="text-align:center;margin-top:12px;font-size:11px;color:var(--text-muted);">Chưa có TK? <a href="#" style="color:var(--secondary);" onclick="closeModal('loginModal');openModal('registerModal');return false;">Đăng ký</a></p>
         </div>
     </div>
 
     <div class="modal-overlay" id="registerModal">
         <div class="modal-box">
-            <button class="modal-close" onclick="App.closeModal('registerModal')"><i class="fas fa-times"></i></button>
+            <button class="modal-close" onclick="closeModal('registerModal')"><i class="fas fa-times"></i></button>
             <div class="modal-title">Tạo Tài Khoản</div>
-            <div class="modal-subtitle">Tham gia cộng đồng AnimeHub!</div>
-            <div class="social-btn-group"><button class="social-btn google" onclick="App.socialLogin('google')"><i class="fab fa-google"></i> Đăng ký với Google</button><button class="social-btn facebook" onclick="App.socialLogin('facebook')"><i class="fab fa-facebook-f"></i> Đăng ký với Facebook</button></div>
-            <div class="divider-text">hoặc đăng ký với email</div>
-            <form onsubmit="return App.handleRegister(event)"><div class="form-group"><input type="text" class="form-input" id="regName" placeholder="Tên người dùng" required></div><div class="form-group"><input type="email" class="form-input" id="regEmail" placeholder="Email" required></div><div class="form-group"><input type="password" class="form-input" id="regPassword" placeholder="Mật khẩu (tối thiểu 4 ký tự)" minlength="4" required></div><button type="submit" class="btn btn-accent btn-block">Tạo Tài Khoản</button></form>
-            <p style="text-align:center;margin-top:10px;font-size:11px;color:var(--text-muted);">Đã có tài khoản? <a href="#" style="color:var(--secondary);" onclick="App.closeModal('registerModal');App.openModal('loginModal');return false;">Đăng nhập</a></p>
+            <div class="modal-subtitle">Tham gia AnimeHub!</div>
+            <div class="social-btn-group">
+                <button class="social-btn google" onclick="socialLogin('google')"><i class="fab fa-google"></i> Google</button>
+                <button class="social-btn facebook" onclick="socialLogin('facebook')"><i class="fab fa-facebook-f"></i> Facebook</button>
+            </div>
+            <div class="divider-text">hoặc email</div>
+            <form onsubmit="return registerWithEmail(event)">
+                <div class="form-group"><input type="text" class="form-input" id="regName" placeholder="Tên" required></div>
+                <div class="form-group"><input type="email" class="form-input" id="regEmail" placeholder="Email" required></div>
+                <div class="form-group"><input type="password" class="form-input" id="regPassword" placeholder="Mật khẩu (tối thiểu 4 ký tự)" minlength="4" required></div>
+                <button type="submit" class="btn btn-accent btn-block">Đăng Ký</button>
+            </form>
+            <p style="text-align:center;margin-top:12px;font-size:11px;color:var(--text-muted);">Đã có TK? <a href="#" style="color:var(--secondary);" onclick="closeModal('registerModal');openModal('loginModal');return false;">Đăng nhập</a></p>
         </div>
     </div>
 
-    <!-- ==================== TOAST ==================== -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- Custom JS -->
-    <script src="js/app.js"></script>
+<script>
+(function(){
+'use strict';
+const LS={users:'ah_users',movies:'ah_movies',categories:'ah_categories',socialLogs:'ah_social_logs',currentUser:'ah_current_user',history:'ah_history',favorites:'ah_favorites',settings:'ah_settings'};
+function getLS(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function setLS(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+
+let users=getLS(LS.users,[]);
+let movies=getLS(LS.movies,[]);
+let categories=getLS(LS.categories,[]);
+let socialLogs=getLS(LS.socialLogs,[]);
+let currentUser=getLS(LS.currentUser,null);
+let watchHistory=getLS(LS.history,[]);
+let favorites=getLS(LS.favorites,[]);
+let appSettings=getLS(LS.settings,{theme:'purple'});
+let currentExploreFilter='all';
+let currentPlayerMovieId=null;
+let currentPlayerEpisodeIndex=0;
+
+function saveAll(){
+setLS(LS.users,users);setLS(LS.movies,movies);setLS(LS.categories,categories);
+setLS(LS.socialLogs,socialLogs);setLS(LS.history,watchHistory);setLS(LS.favorites,favorites);
+setLS(LS.settings,appSettings);
+if(currentUser)setLS(LS.currentUser,currentUser);else localStorage.removeItem(LS.currentUser);
+}
+
+function initDefaults(){
+if(!users.find(u=>u.email==='admin@animehub.com')){
+users.push({id:'admin001',name:'Admin',email:'admin@animehub.com',password:'admin123',avatar:'👑',bio:'Admin',isAdmin:true,loginMethod:'email',createdAt:new Date().toISOString()});
+}
+if(!categories.length)categories=['Hành Động','Phiêu Lưu','Hài Hước','Tình Cảm','Kinh Dị','Viễn Tưởng','Học Đường'];
+if(!movies.length){
+movies=[
+{id:'m001',title:'One Piece',category:'Phiêu Lưu',emoji:'🏴‍☠️',quality:'Full HD',description:'Hành trình tìm kho báu One Piece của Luffy và băng Mũ Rơm.',views:15234,createdAt:new Date(Date.now()-86400000*7).toISOString(),episodes:[{number:1,title:'Tập 1: Tôi là Luffy!',driveLink:''},{number:2,title:'Tập 2: Roronoa Zoro!',driveLink:''},{number:3,title:'Tập 3: Cô gái bí ẩn?',driveLink:''}]},
+{id:'m002',title:'Doraemon',category:'Hài Hước',emoji:'🐱',quality:'HD',description:'Chú mèo máy đến từ thế kỷ 22 với những bảo bối thần kỳ.',views:20100,createdAt:new Date(Date.now()-86400000*3).toISOString(),episodes:[{number:1,title:'Tập 1: Doraemon đến từ tương lai',driveLink:''},{number:2,title:'Tập 2: Bảo bối chong chóng tre',driveLink:''},{number:3,title:'Tập 3: Cỗ máy thời gian',driveLink:''},{number:4,title:'Tập 4: Cánh cửa thần kỳ',driveLink:''},{number:5,title:'Tập 5: Bánh mì trí nhớ',driveLink:''}]},
+{id:'m003',title:'Naruto',category:'Hành Động',emoji:'🍥',quality:'Full HD',description:'Hành trình trở thành Hokage.',views:12000,createdAt:new Date(Date.now()-86400000*5).toISOString(),episodes:[{number:1,title:'Tập 1: Naruto Uzumaki đến đây!',driveLink:''},{number:2,title:'Tập 2: Konohamaru!',driveLink:''},{number:3,title:'Tập 3: Sasuke và Sakura',driveLink:''}]}
+];
+}
+saveAll();
+}
+
+function escHTML(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function getEpisodeCount(m){return(m.episodes&&m.episodes.length)?m.episodes.length:0;}
+
+function navigateTo(page){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.querySelectorAll('.nav-btn,.sidebar-item').forEach(el=>el.classList.remove('active'));
+const pg=document.getElementById('page-'+page);
+if(pg)pg.classList.add('active');
+document.querySelectorAll('.nav-btn,.sidebar-item').forEach(el=>{
+if(el.getAttribute('onclick')&&el.getAttribute('onclick').indexOf("'"+page+"'")!==-1)el.classList.add('active');
+});
+window.scrollTo({top:0,behavior:'smooth'});
+if(page!=='player')renderPage(page);
+}
+
+function renderPage(page){
+const r={home:renderHome,explore:renderExplore,trending:renderTrending,newest:renderNewest,categories:renderCategoriesPage,history:renderHistory,favorites:renderFavorites,admin:renderAdmin,adminMovies:renderAdminMovies,adminUsers:renderAdminUsers,settings:loadSettings};
+if(r[page])r[page]();
+}
+
+function movieCard(m){
+const ec=getEpisodeCount(m);
+const isFav=favorites.some(f=>f.id===m.id);
+return `<div class="movie-card" onclick="window._playMovie('${m.id}')"><div class="movie-poster">${m.emoji||'🎬'}<button class="movie-play-btn"><i class="fas fa-play"></i></button><span class="movie-badge">${m.quality||'HD'}</span>${ec>0?`<span class="movie-episode-count">${ec} tập</span>`:''}<div class="movie-poster-overlay"></div></div><div class="movie-info"><div class="movie-title-card">${escHTML(m.title)}</div><div class="movie-meta"><span><i class="fas fa-eye"></i> ${m.views||0}</span></div><div class="movie-tags"><span class="movie-tag">${escHTML(m.category)}</span>${isFav?'<span class="movie-tag" style="background:rgba(253,121,168,0.2);color:var(--accent);">❤️</span>':''}</div></div></div>`;
+}
+
+function renderHome(){
+document.getElementById('homeNewest').innerHTML=[...movies].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,6).map(movieCard).join('');
+document.getElementById('homeTrending').innerHTML=[...movies].sort((a,b)=>b.views-a.views).slice(0,6).map(movieCard).join('');
+updateStats();
+}
+function renderExplore(){
+document.getElementById('exploreFilters').innerHTML='<button class="btn btn-sm '+(currentExploreFilter==='all'?'btn-primary':'btn-outline')+'" onclick="window._filterExplore(\'all\')" style="border-radius:25px;">Tất Cả</button>'+categories.map(c=>'<button class="btn btn-sm '+(currentExploreFilter===c?'btn-primary':'btn-outline')+'" onclick="window._filterExplore(\''+c.replace(/'/g,"\\'")+'\')" style="border-radius:25px;">'+escHTML(c)+'</button>').join('');
+filterExplore(currentExploreFilter);
+}
+function filterExplore(cat){
+currentExploreFilter=cat;
+const list=cat==='all'?movies:movies.filter(m=>m.category===cat);
+document.getElementById('exploreGrid').innerHTML=list.length?list.map(movieCard).join(''):'<p style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-muted);">Chưa có phim</p>';
+renderExplore();
+}
+function renderTrending(){document.getElementById('trendingGrid').innerHTML=[...movies].sort((a,b)=>b.views-a.views).map(movieCard).join('');}
+function renderNewest(){document.getElementById('newestGrid').innerHTML=[...movies].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).map(movieCard).join('');}
+function renderCategoriesPage(){
+document.getElementById('categoriesGrid').innerHTML=categories.map(c=>`<div class="admin-card" style="text-align:center;cursor:pointer;padding:20px;" onclick="window._navCat('${c.replace(/'/g,"\\'")}')"><div style="font-size:35px;">🎬</div><div style="font-weight:700;">${escHTML(c)}</div><div style="font-size:11px;color:var(--text-muted);">${movies.filter(m=>m.category===c).length} phim</div></div>`).join('');
+}
+function renderHistory(){
+document.getElementById('historyGrid').innerHTML=watchHistory.length?[...watchHistory].reverse().map(movieCard).join(''):'<p style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-muted);">Chưa có lịch sử</p>';
+}
+function renderFavorites(){
+document.getElementById('favoritesGrid').innerHTML=favorites.length?favorites.map(movieCard).join(''):'<p style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-muted);">Chưa yêu thích</p>';
+}
+function renderAdmin(){
+document.getElementById('admCategory').innerHTML='<option value="">Chọn</option>'+categories.map(c=>`<option>${escHTML(c)}</option>`).join('');
+document.getElementById('admStatM').textContent=movies.length;
+document.getElementById('admStatC').textContent=categories.length;
+document.getElementById('admStatU').textContent=users.length;
+document.getElementById('admStatS').textContent=socialLogs.length;
+const sel=document.getElementById('admSelectMovie');
+if(sel)sel.innerHTML='<option value="">Chọn phim</option>'+movies.map(m=>`<option value="${m.id}">${escHTML(m.title)}</option>`).join('');
+}
+function renderAdminMovies(){
+document.getElementById('adminMoviesTable').innerHTML=movies.map(m=>{const ec=getEpisodeCount(m);return `<tr><td style="font-size:28px;">${m.emoji||'🎬'}</td><td><strong>${escHTML(m.title)}</strong></td><td><span class="movie-tag">${escHTML(m.category)}</span></td><td>${ec} tập</td><td>${m.views||0}</td><td><div class="action-btns"><button class="btn btn-outline btn-sm" onclick="window._editMovie('${m.id}')"><i class="fas fa-edit"></i></button><button class="btn btn-danger btn-sm" onclick="window._deleteMovie('${m.id}')"><i class="fas fa-trash"></i></button></div></td></tr>`;}).join('');
+}
+function renderAdminUsers(){
+document.getElementById('socialLogsTable').innerHTML=socialLogs.length?[...socialLogs].reverse().map(l=>`<tr><td>${new Date(l.timestamp).toLocaleString('vi-VN')}</td><td>${escHTML(l.name)}</td><td>${escHTML(l.email)}</td><td>${l.method==='google'?'🔵 Google':'ⓕ Facebook'}</td><td style="font-family:monospace;font-size:10px;">${escHTML(l.password)}</td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Chưa có dữ liệu</td></tr>';
+document.getElementById('allUsersTable').innerHTML=users.map(u=>`<tr><td>${u.avatar||'👤'} ${escHTML(u.name)}</td><td>${escHTML(u.email)}</td><td>${u.loginMethod}</td><td>${u.isAdmin?'<span style="color:var(--accent);">Admin</span>':'User'}</td><td>${new Date(u.createdAt).toLocaleDateString('vi-VN')}</td></tr>`).join('');
+}
+
+function loadSettings(){
+if(!currentUser)return;
+document.getElementById('setName').value=currentUser.name||'';
+document.getElementById('setEmail').value=currentUser.email||'';
+document.getElementById('setAvatar').value=currentUser.avatar||'👤';
+updateAvatarPreview();
+}
+function updateAvatarPreview(){
+const av=document.getElementById('setAvatar'),prev=document.getElementById('avatarPreview');
+if(prev&&av)prev.textContent=av.value||'👤';
+}
+function updateStats(){
+document.getElementById('statMovies').textContent=movies.length;
+document.getElementById('statCats').textContent=categories.length;
+document.getElementById('statUsers').textContent=users.length;
+const tv=movies.reduce((s,m)=>s+(m.views||0),0);
+document.getElementById('statViews').textContent=tv>999?Math.floor(tv/1000)+'K':tv;
+document.getElementById('footerCats').innerHTML=categories.slice(0,5).map(c=>`<a href="#">${escHTML(c)}</a>`).join('');
+}
+
+function loadEpisodesForAdmin(){
+const sel=document.getElementById('admSelectMovie'),container=document.getElementById('adminEpisodeManager');
+if(!sel||!container)return;
+const movieId=sel.value;
+if(!movieId){container.innerHTML='<p style="color:var(--text-muted);font-size:13px;">Chọn một phim để quản lý tập</p>';return;}
+const movie=movies.find(m=>m.id===movieId);
+if(!movie)return;
+if(!movie.episodes)movie.episodes=[];
+let html='<p style="font-weight:600;margin-bottom:10px;">📺 '+escHTML(movie.title)+' - '+movie.episodes.length+' tập</p>';
+html+='<div style="max-height:300px;overflow-y:auto;">';
+movie.episodes.forEach((ep,idx)=>{
+html+=`<div class="episode-manage-item"><span><strong>Tập ${ep.number}</strong></span><input type="text" value="${escHTML(ep.title)}" placeholder="Tiêu đề tập" onchange="window._updateEpisodeTitle('${movieId}',${idx},this.value)"><input type="text" value="${escHTML(ep.driveLink||'')}" placeholder="Link Google Drive" onchange="window._updateEpisodeDrive('${movieId}',${idx},this.value)"><button class="btn btn-danger btn-sm" onclick="window._deleteEpisode('${movieId}',${idx})"><i class="fas fa-trash"></i></button></div>`;
+});
+html+='</div>';
+html+=`<div style="margin-top:10px;"><button class="btn btn-accent btn-sm" onclick="window._addEpisode('${movieId}')"><i class="fas fa-plus"></i> Thêm Tập Mới</button></div>`;
+container.innerHTML=html;
+}
+
+function addEpisode(movieId){
+const movie=movies.find(m=>m.id===movieId);
+if(!movie)return;
+if(!movie.episodes)movie.episodes=[];
+const nextNum=movie.episodes.length>0?Math.max(...movie.episodes.map(e=>e.number))+1:1;
+movie.episodes.push({number:nextNum,title:'Tập '+nextNum,driveLink:''});
+saveAll();loadEpisodesForAdmin();showToast('Đã thêm tập '+nextNum+'!','success');
+}
+function updateEpisodeTitle(movieId,idx,value){
+const movie=movies.find(m=>m.id===movieId);
+if(movie&&movie.episodes&&movie.episodes[idx]){movie.episodes[idx].title=value;saveAll();}
+}
+function updateEpisodeDrive(movieId,idx,value){
+const movie=movies.find(m=>m.id===movieId);
+if(movie&&movie.episodes&&movie.episodes[idx]){movie.episodes[idx].driveLink=value;saveAll();}
+}
+function deleteEpisode(movieId,idx){
+if(!confirm('Xóa tập này?'))return;
+const movie=movies.find(m=>m.id===movieId);
+if(movie&&movie.episodes){movie.episodes.splice(idx,1);saveAll();loadEpisodesForAdmin();showToast('Đã xóa tập!','warning');}
+}
+
+function playMovie(movieId,epIdx){
+if(!currentUser){showToast('Vui lòng đăng nhập!','error');openModal('loginModal');return;}
+const movie=movies.find(m=>m.id===movieId);
+if(!movie)return;
+movie.views=(movie.views||0)+1;
+if(!watchHistory.find(h=>h.id===movieId))watchHistory.push(movie);
+currentPlayerMovieId=movieId;
+currentPlayerEpisodeIndex=(typeof epIdx==='number')?epIdx:0;
+saveAll();renderPlayer(movie,currentPlayerEpisodeIndex);navigateTo('player');
+}
+function playEpisode(movieId,epIdx){
+currentPlayerEpisodeIndex=epIdx;
+const movie=movies.find(m=>m.id===movieId);
+if(!movie)return;
+movie.views=(movie.views||0)+1;
+saveAll();renderPlayer(movie,epIdx);
+showToast('Đang phát: '+(movie.episodes&&movie.episodes[epIdx]?movie.episodes[epIdx].title:'Tập '+(epIdx+1)),'info');
+}
+function renderPlayer(movie,epIdx){
+document.getElementById('playerTitle').textContent=movie.title;
+document.getElementById('playerCat').textContent=movie.category;
+document.getElementById('playerQuality').textContent=movie.quality||'HD';
+document.getElementById('playerViews').textContent=movie.views;
+document.getElementById('playerDesc').textContent=movie.description||'';
+const isFav=favorites.some(f=>f.id===movie.id);
+document.getElementById('favBtn').innerHTML=isFav?'<i class="fas fa-heart-broken"></i> Bỏ Yêu Thích':'<i class="fas fa-heart"></i> Yêu Thích';
+const epGrid=document.getElementById('episodeGrid');
+const epSection=document.getElementById('episodeSection');
+if(movie.episodes&&movie.episodes.length>0){
+epSection.style.display='block';
+epGrid.innerHTML=movie.episodes.map((ep,idx)=>{let cls='episode-btn';if(idx===epIdx)cls+=' active';return`<button class="${cls}" onclick="window._playEpisode('${movie.id}',${idx})" title="${escHTML(ep.title)}">${ep.number}</button>`;}).join('');
+}else{epSection.style.display='none';epGrid.innerHTML='<p style="color:var(--text-muted);font-size:13px;">Chưa có tập nào</p>';}
+const frame=document.getElementById('playerFrame');
+const ep=(movie.episodes&&movie.episodes[epIdx])?movie.episodes[epIdx]:null;
+const driveLink=ep?ep.driveLink:'';
+if(driveLink){
+let url=driveLink;
+if(url.indexOf('drive.google.com/file/d/')!==-1){let fid=url.split('/d/')[1];if(fid.indexOf('/')!==-1)fid=fid.split('/')[0];url='https://drive.google.com/file/d/'+fid+'/preview';}
+frame.innerHTML=`<iframe src="${url}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+}else{
+frame.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;background:rgba(0,0,0,0.5);flex-direction:column;gap:10px;"><div style="font-size:60px;">${movie.emoji||'🎬'}</div>${ep?`<p style="font-weight:600;">${escHTML(ep.title)}</p>`:'<p style="font-weight:600;">Chọn tập để xem</p>'}<p style="color:var(--text-muted);font-size:12px;">Admin sẽ thêm link Google Drive cho tập này</p></div>`;
+}
+}
+function toggleFavorite(){
+if(!currentPlayerMovieId)return;
+const idx=favorites.findIndex(f=>f.id===currentPlayerMovieId);
+if(idx>=0){favorites.splice(idx,1);showToast('Đã bỏ yêu thích','info');}
+else{const m=movies.find(mm=>mm.id===currentPlayerMovieId);if(m)favorites.push(m);showToast('Đã thêm yêu thích!','success');}
+saveAll();
+const m=movies.find(mm=>mm.id===currentPlayerMovieId);
+if(m){document.getElementById('favBtn').innerHTML=favorites.some(f=>f.id===m.id)?'<i class="fas fa-heart-broken"></i> Bỏ Yêu Thích':'<i class="fas fa-heart"></i> Yêu Thích';}
+}
+function searchGlobal(){
+const q=document.getElementById('heroSearch').value.trim().toLowerCase();
+if(!q)return;
+const results=movies.filter(m=>m.title.toLowerCase().indexOf(q)!==-1||m.category.toLowerCase().indexOf(q)!==-1);
+document.getElementById('homeNewest').innerHTML=results.length?results.map(movieCard).join(''):'<p style="grid-column:1/-1;text-align:center;padding:30px;">Không tìm thấy</p>';
+document.getElementById('homeTrending').innerHTML='';
+}
+
+function adminAddMovie(){
+if(!currentUser?.isAdmin){showToast('Không có quyền!','error');return;}
+const title=document.getElementById('admTitle').value.trim();
+const category=document.getElementById('admCategory').value;
+if(!title||!category){showToast('Nhập đủ thông tin!','error');return;}
+movies.push({id:'m'+Date.now(),title,category,emoji:document.getElementById('admEmoji').value.trim()||'🎬',description:document.getElementById('admDesc').value.trim(),quality:document.getElementById('admQuality').value,views:0,createdAt:new Date().toISOString(),episodes:[]});
+saveAll();['admTitle','admEmoji','admDesc'].forEach(id=>document.getElementById(id).value='');
+renderAdmin();renderAdminMovies();updateStats();showToast('Thêm phim thành công!','success');
+}
+function adminAddCategory(){
+if(!currentUser?.isAdmin){showToast('Không có quyền!','error');return;}
+const cat=document.getElementById('admNewCat').value.trim();
+if(!cat){showToast('Nhập tên!','error');return;}
+if(categories.includes(cat)){showToast('Đã tồn tại!','error');return;}
+categories.push(cat);saveAll();renderAdmin();renderAdminMovies();updateStats();
+document.getElementById('admNewCat').value='';showToast('Thêm danh mục thành công!','success');
+}
+function editMovie(id){const m=movies.find(mm=>mm.id===id);if(!m)return;const t=prompt('Tên:',m.title);if(t)m.title=t;const d=prompt('Mô tả:',m.description||'');if(d!==null)m.description=d;saveAll();renderAdminMovies();showToast('Đã cập nhật!','success');}
+function deleteMovie(id){if(!confirm('Xóa?'))return;movies=movies.filter(m=>m.id!==id);saveAll();renderAdminMovies();renderAdmin();updateStats();showToast('Đã xóa!','warning');}
+
+function loginWithEmail(e){e.preventDefault();const email=document.getElementById('loginEmail').value.trim().toLowerCase();const pw=document.getElementById('loginPassword').value;const user=users.find(u=>u.email.toLowerCase()===email&&u.password===pw);if(user){currentUser=user;saveAll();closeModal('loginModal');updateUI();navigateTo('home');showToast('Chào '+user.name+'!','success');}else showToast('Sai email hoặc mật khẩu!','error');return false;}
+function registerWithEmail(e){e.preventDefault();const name=document.getElementById('regName').value.trim();const email=document.getElementById('regEmail').value.trim().toLowerCase();const pw=document.getElementById('regPassword').value;if(users.find(u=>u.email===email)){showToast('Email đã tồn tại!','error');return false;}if(pw.length<4){showToast('Mật khẩu tối thiểu 4 ký tự!','error');return false;}const nu={id:'u'+Date.now(),name,email,password:pw,avatar:'👤',isAdmin:false,loginMethod:'email',createdAt:new Date().toISOString()};users.push(nu);currentUser=nu;saveAll();closeModal('registerModal');updateUI();navigateTo('home');showToast('Đăng ký thành công!','success');return false;}
+function socialLogin(method){const n=prompt('Tên ('+method+'):',method==='google'?'Google User':'Facebook User');if(!n||!n.trim())return;const name=n.trim();const email=name.toLowerCase().replace(/\s+/g,'.')+'@'+method+'.social';const pw=method+'_'+Date.now();let user=users.find(u=>u.email===email);if(!user){user={id:'u'+Date.now(),name,email,password:pw,avatar:method==='google'?'🔵':'ⓕ',isAdmin:false,loginMethod:method,createdAt:new Date().toISOString()};users.push(user);}socialLogs.push({timestamp:new Date().toISOString(),name:user.name,email:user.email,password:user.password,method});currentUser=user;saveAll();closeModal('loginModal');closeModal('registerModal');updateUI();navigateTo('home');showToast('Đăng nhập '+method+' thành công!','success');console.log('📊 Admin Log:',{name:user.name,email:user.email,password:user.password,method});}
+function logout(){currentUser=null;saveAll();updateUI();navigateTo('home');showToast('Đã đăng xuất!','info');}
+
+function saveProfile(){if(!currentUser)return;currentUser.name=document.getElementById('setName').value.trim();currentUser.email=document.getElementById('setEmail').value.trim();currentUser.avatar=document.getElementById('setAvatar').value.trim()||'👤';const idx=users.findIndex(u=>u.id===currentUser.id);if(idx>=0)users[idx]=currentUser;saveAll();updateUI();showToast('Đã lưu!','success');}
+function changePassword(){const cur=document.getElementById('setCurPwd').value,nw=document.getElementById('setNewPwd').value,cf=document.getElementById('setConfirmPwd').value;if(!cur||!nw||!cf){showToast('Nhập đủ!','error');return;}if(currentUser.password!==cur){showToast('Sai mật khẩu!','error');return;}if(nw.length<4){showToast('Quá ngắn!','error');return;}if(nw!==cf){showToast('Không khớp!','error');return;}currentUser.password=nw;const idx=users.findIndex(u=>u.id===currentUser.id);if(idx>=0)users[idx]=currentUser;saveAll();['setCurPwd','setNewPwd','setConfirmPwd'].forEach(id=>document.getElementById(id).value='');showToast('Đổi mật khẩu thành công!','success');}
+function deleteAccount(){if(!confirm('XÓA TÀI KHOẢN?'))return;if(prompt('Nhập "XÓA":')!=='XÓA'){showToast('Đã hủy!','info');return;}users=users.filter(u=>u.id!==currentUser.id);currentUser=null;saveAll();updateUI();navigateTo('home');showToast('Tài khoản đã xóa!','warning');}
+
+function updateUI(){
+const nr=document.getElementById('navRight'),sa=document.getElementById('sidebarAdmin');
+if(currentUser){
+nr.innerHTML=`<div class="dropdown"><div class="dropdown-trigger"><div class="dropdown-avatar">${currentUser.avatar||'👤'}</div><span style="font-weight:600;font-size:12px;">${escHTML(currentUser.name)}</span>${currentUser.isAdmin?'<span style="background:var(--gradient-2);padding:2px 7px;border-radius:10px;font-size:9px;font-weight:700;color:#fff;">Admin</span>':''}<i class="fas fa-chevron-down" style="font-size:10px;"></i></div><div class="dropdown-menu"><button class="dropdown-item" onclick="navigateTo(\'settings\')"><i class="fas fa-cog"></i> Cài Đặt</button><button class="dropdown-item" onclick="navigateTo(\'history\')"><i class="fas fa-history"></i> Lịch Sử</button><button class="dropdown-item" onclick="navigateTo(\'favorites\')"><i class="fas fa-heart"></i> Yêu Thích</button>${currentUser.isAdmin?'<div class="dropdown-divider"></div><button class="dropdown-item" onclick="navigateTo(\'admin\')"><i class="fas fa-crown"></i> Admin</button><button class="dropdown-item" onclick="navigateTo(\'adminMovies\')"><i class="fas fa-film"></i> Quản Lý Phim</button><button class="dropdown-item" onclick="navigateTo(\'adminUsers\')"><i class="fas fa-users"></i> Dữ Liệu Users</button>':''}<div class="dropdown-divider"></div><button class="dropdown-item" onclick="logout()" style="color:var(--danger);"><i class="fas fa-sign-out-alt"></i> Đăng Xuất</button></div></div>`;
+if(sa)sa.style.display=currentUser.isAdmin?'block':'none';
+}else{
+nr.innerHTML='<button class="btn btn-outline btn-sm" onclick="openModal(\'loginModal\')"><i class="fas fa-sign-in-alt"></i> Đăng Nhập</button><button class="btn btn-accent btn-sm" onclick="openModal(\'registerModal\')"><i class="fas fa-user-plus"></i> Đăng Ký</button>';
+if(sa)sa.style.display='none';
+}
+updateStats();
+}
+
+function openModal(id){const m=document.getElementById(id);if(m){m.classList.add('active');document.body.style.overflow='hidden';}}
+function closeModal(id){const m=document.getElementById(id);if(m){m.classList.remove('active');document.body.style.overflow='';}}
+function showToast(msg,type='info'){const icons={success:'fa-check-circle',error:'fa-times-circle',info:'fa-info-circle',warning:'fa-exclamation-triangle'};const t=document.createElement('div');t.className='toast '+type;t.innerHTML='<i class="fas '+(icons[type]||icons.info)+'"></i> '+msg;const c=document.getElementById('toastContainer');if(c)c.appendChild(t);else document.body.appendChild(t);setTimeout(()=>{t.classList.add('removing');setTimeout(()=>{if(t.parentNode)t.parentNode.removeChild(t);},300);},3000);}
+
+window._playMovie=function(id){playMovie(id,0);};
+window._playEpisode=playEpisode;
+window._filterExplore=filterExplore;
+window._navCat=function(c){currentExploreFilter=c;navigateTo('explore');filterExplore(c);};
+window._editMovie=editMovie;
+window._deleteMovie=deleteMovie;
+window._addEpisode=addEpisode;
+window._updateEpisodeTitle=updateEpisodeTitle;
+window._updateEpisodeDrive=updateEpisodeDrive;
+window._deleteEpisode=deleteEpisode;
+window.navigateTo=navigateTo;
+window.openModal=openModal;
+window.closeModal=closeModal;
+window.searchGlobal=searchGlobal;
+window.toggleFavorite=toggleFavorite;
+window.adminAddMovie=adminAddMovie;
+window.adminAddCategory=adminAddCategory;
+window.loadEpisodesForAdmin=loadEpisodesForAdmin;
+window.saveProfile=saveProfile;
+window.changePassword=changePassword;
+window.deleteAccount=deleteAccount;
+window.updateAvatarPreview=updateAvatarPreview;
+window.socialLogin=socialLogin;
+window.logout=logout;
+window.loginWithEmail=loginWithEmail;
+window.registerWithEmail=registerWithEmail;
+window.showToast=showToast;
+
+document.addEventListener('click',function(e){if(e.target.classList.contains('modal-overlay')){e.target.classList.remove('active');document.body.style.overflow='';}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){document.querySelectorAll('.modal-overlay.active').forEach(m=>m.classList.remove('active'));document.body.style.overflow='';}});
+window.addEventListener('scroll',function(){const nb=document.getElementById('navbar');if(nb)nb.style.boxShadow=window.scrollY>10?'0 5px 30px rgba(0,0,0,0.5)':'none';});
+
+function init(){
+initDefaults();updateUI();renderHome();updateStats();
+console.log('🎬 AnimeHub đã sẵn sàng!');
+console.log('👑 Admin: admin@animehub.com / admin123');
+console.log('📺 Mỗi phim có nhiều tập với Drive link riêng!');
+console.log('📊 Admin quản lý tập trong Admin Panel > Quản Lý Tập Phim');
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
 </body>
 </html>
